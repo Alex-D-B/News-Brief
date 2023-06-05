@@ -2,6 +2,7 @@ import scrapy
 import requests
 from datetime import date
 import time
+from stories import nytData
 
 class NYTSpider(scrapy.Spider):
     name = 'nyt'
@@ -9,22 +10,22 @@ class NYTSpider(scrapy.Spider):
         'https://www.nytimes.com/section/world'
     ]
 
-    additional_urls = [
-        # 'https://www.nytimes.com/section/us',
-        # 'https://www.nytimes.com/section/politics',
-        # 'https://www.nytimes.com/section/nyregion',
-        # 'https://www.nytimes.com/section/business',
-        # 'https://www.nytimes.com/section/opinion',
-        # 'https://www.nytimes.com/section/science',
-        # 'https://www.nytimes.com/section/health',
-        # 'https://www.nytimes.com/section/sports',
-        # 'https://www.nytimes.com/section/arts',
-        # 'https://www.nytimes.com/section/books/review',
-        # 'https://www.nytimes.com/section/style',
-        # 'https://www.nytimes.com/section/food',
-        # 'https://www.nytimes.com/section/travel',
-        # 'https://www.nytimes.com/section/magazine',
-        # 'https://www.nytimes.com/section/realestate'
+    additional_categories = [
+        'us',
+        'politics',
+        'nyregion',
+        'business',
+        'opinion',
+        'science',
+        'health',
+        'sports',
+        'arts',
+        'books',
+        'style',
+        'food',
+        'travel',
+        'magazine',
+        'realestate'
     ]
 
     dateStr = str(date.today())
@@ -32,10 +33,28 @@ class NYTSpider(scrapy.Spider):
     linkLen = len(linkDateStr)
     linkBase = 'https://www.nytimes.com'
     source = 'New York Times'
-    totalSegments = len(additional_urls) + 1
+    totalSegments = len(additional_categories) + 1
+
+    seenStories = dict()
+    curCategory = 'world'
+
+    def storeStory(self, story, linkExt, *, titleCSSSelector, authorCSSSelector):
+        link = self.linkBase + linkExt
+        if link in self.seenStories:
+            self.seenStories[link]['categories'].add(self.curCategory)
+        else:
+            self.seenStories[link] = {
+                'title': story.css(titleCSSSelector).get(),
+                'description': story.css('p::text').get(),
+                'author': story.css(authorCSSSelector).get(),
+                'categories': {self.curCategory},
+                'date': self.dateStr,
+                'link': link,
+                'source': self.source
+            }
 
     def parse(self, response):
-        curProgress = self.totalSegments - len(self.additional_urls) - 1
+        curProgress = self.totalSegments - len(self.additional_categories) - 1
         print('\r[\033[01;32m' + ('#' * curProgress) + '\033[00m' + ('-' * (self.totalSegments - curProgress)) + ']', end='')
 
         sections = response.css('section.css-15h4p1b').xpath('div')[-3:]
@@ -43,19 +62,11 @@ class NYTSpider(scrapy.Spider):
 
         # get highlights
         for story in mainSections[0].css('article').xpath('div'):
-            titleBar = story.css('h3 a')
-            linkExt = titleBar.css('::attr(href)').get()
+            linkExt = story.css('h3 a::attr(href)').get()
             if linkExt[:self.linkLen] != self.linkDateStr:
                 continue
 
-            yield {
-                'title': titleBar.css('::text').get(),
-                'description': story.css('p::text').get(),
-                'author': story.css('span.css-1baulvz::text').get(),
-                'date': self.dateStr,
-                'link': self.linkBase + linkExt,
-                'source': self.source
-            }
+            self.storeStory(story, linkExt, titleCSSSelector='h3 a::text', authorCSSSelector='span.css-1baulvz::text')
 
         # get other stories in main section
         for story in mainSections[1:].css('a') + sections[0].xpath('section/ol//a'):
@@ -63,14 +74,7 @@ class NYTSpider(scrapy.Spider):
             if linkExt[:self.linkLen] != self.linkDateStr:
                 continue
 
-            yield {
-                'title': story.css('h3::text').get(),
-                'description': story.css('p::text').get(),
-                'author': story.css('span.css-1baulvz::text').get(),
-                'date': self.dateStr,
-                'link': self.linkBase + linkExt,
-                'source': self.source
-            }
+            self.storeStory(story, linkExt, titleCSSSelector='h3::text', authorCSSSelector='span.css-1baulvz::text')
         
         # get remaining stories from the stream
         for story in sections[1].css('section a'):
@@ -80,23 +84,13 @@ class NYTSpider(scrapy.Spider):
                     continue
                 break   # since stories are in chronological order
 
-            yield {
-                'title': story.css('h3::text').get(),
-                'description': story.css('p::text').get(),
-                'author': story.css('span.css-1n7hynb::text').get(), # try without extra css class
-                'date': self.dateStr,
-                'link': self.linkBase + linkExt,
-                'source': self.source
-            }
+            self.storeStory(story, linkExt, titleCSSSelector='h3::text', authorCSSSelector='span.css-1n7hynb::text')
 
         # go to the next page
-        if len(self.additional_urls) > 0:
-            next_page = self.additional_urls.pop(0)
+        if len(self.additional_categories) > 0:
             time.sleep(1)
-            yield response.follow(next_page, self.parse)
+            self.curCategory = self.additional_categories.pop(0)
+            yield response.follow('https://www.nytimes.com/section/' + self.curCategory + ('/review' if self.curCategory == 'books' else ''), self.parse)
         else:
+            nytData.save(self.seenStories.values())
             print('\r[\033[01;32m' + ('#' * self.totalSegments) + '\033[00m]')
-
-def scrape():
-    with open('./data/nyt_test.html', 'w') as file:
-        file.write(requests.get('https://www.nytimes.com/section/world').text)

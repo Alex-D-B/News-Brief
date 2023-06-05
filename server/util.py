@@ -8,11 +8,4 @@ def setup():
 # use crochet to make the spider crawl a website
 @wait_for(20)
 def scrape(SpiderCls):
-    return CrawlerRunner(settings={
-        'FEEDS': {
-            './data/' + SpiderCls.name + '.json': {
-                'format': 'json',
-                'overwrite': True
-            }
-        }
-    }).crawl(SpiderCls)
+    return CrawlerRunner().crawl(SpiderCls)
