@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model stories {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  author      String?
+  categories  String[]
+  date        String
+  description String?
+  link        String
+  source      String
+  title       String
+}
+
 model users {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   email String
