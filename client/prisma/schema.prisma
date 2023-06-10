@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model stories {
+model story {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   author      String?
   categories  String[]

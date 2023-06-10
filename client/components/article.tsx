@@ -1,17 +1,8 @@
-import { PrismaClient, stories } from "@prisma/client";
+import { PrismaClient, story as Story } from "@prisma/client";
 
-const prisma = new PrismaClient();
+export default async function Article(props: Story): Promise<JSX.Element> {
 
-export default async function Article(): Promise<JSX.Element> {
-
-    const story = await prisma.stories.findFirst({
-        where: {
-            categories: {
-                has: 'world'
-            }
-        }
-    }) as stories;
-    const categories = story.categories.map((category) => {
+    const categories = props.categories.map((category) => {
         return <li key={category}>{category}</li>;
     });
 
@@ -19,17 +10,17 @@ export default async function Article(): Promise<JSX.Element> {
         <div className="bg-blue-400 rounded-lg py-2 px-4 max-w-md float-left">
             <div className="pb-2 text-gray-100 text-xs grid grid-cols-2">
                 <ul className="font-bold flex space-x-2">{categories}</ul>
-                <p className="justify-self-end">{story.source}</p>
+                <p className="justify-self-end">{props.source}</p>
             </div>
             <a
                 className="hover:text-gray-700"
-                href={story.link}
+                href={props.link}
             >
-                <span className="font-bold text-lg">{story.title}</span>
-                <span> by {story.author ?? 'unknown'}</span>
+                <span className="font-bold text-lg">{props.title}</span>
+                <span> by {props.author ?? 'unknown'}</span>
             </a>
-            <p className="text-sm">{story.description}</p>
-            <p className="pt-2 text-gray-100 text-xs float-right">{story.date}</p>
+            <p className="text-sm">{props.description}</p>
+            <p className="pt-2 text-gray-100 text-xs float-right">{props.date}</p>
         </div>
     );
 }

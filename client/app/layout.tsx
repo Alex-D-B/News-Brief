@@ -19,7 +19,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <Provider>
-                    <main className="flow-root min-h-screen flex-col items-center space-x-10 space-y-10">
+                    <main className="flow-root min-h-screen items-center space-x-10 space-y-10">
                         <Nav/>
                         {children}
                     </main>
