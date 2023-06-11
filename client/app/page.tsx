@@ -1,12 +1,11 @@
 import Article from '@/components/article';
-import { PrismaClient, story as Story } from '@prisma/client';
-
-const prismaClient = new PrismaClient();
+import { story as Story } from '@prisma/client';
+import database from '@/net/database';
 
 const getMostRecentStories = async (): Promise<Story[]> => {
     let date = new Date();
     for (let i = 0; i < 3; ++i) {
-        const feed = await prismaClient.story.findMany({
+        const feed = await database.story.findMany({
             where: {
                 date: {
                     equals: date.toISOString().slice(0, 10)
@@ -21,7 +20,7 @@ const getMostRecentStories = async (): Promise<Story[]> => {
         date.setDate(date.getDate() - 1);
     }
 
-    return await prismaClient.story.findMany({
+    return await database.story.findMany({
         where: {
             date: {
                 equals: '2023-06-08'

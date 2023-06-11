@@ -18,7 +18,8 @@ model story {
   title       String
 }
 
-model users {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  email String
+model user {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  email       String
+  preferences String[]
 }
