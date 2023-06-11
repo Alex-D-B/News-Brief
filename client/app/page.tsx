@@ -3,14 +3,35 @@ import { PrismaClient, story as Story } from '@prisma/client';
 
 const prismaClient = new PrismaClient();
 
-const getRandomlySortedFeed = async (date: string): Promise<Story[]> => {
-    let curFeed = await prismaClient.story.findMany({
+const getMostRecentStories = async (): Promise<Story[]> => {
+    let date = new Date();
+    for (let i = 0; i < 3; ++i) {
+        const feed = await prismaClient.story.findMany({
+            where: {
+                date: {
+                    equals: date.toISOString().slice(0, 10)
+                }
+            }
+        });
+
+        if (feed.length > 0) {
+            return feed;
+        }
+
+        date.setDate(date.getDate() - 1);
+    }
+
+    return await prismaClient.story.findMany({
         where: {
             date: {
-                equals: date
+                equals: '2023-06-08'
             }
         }
     });
+}
+
+const getRandomlySortedFeed = async (): Promise<Story[]> => {
+    let curFeed = await getMostRecentStories();
 
     let i = curFeed.length;
     while (i > 0) {
@@ -25,7 +46,7 @@ const getRandomlySortedFeed = async (date: string): Promise<Story[]> => {
 
 export default async function Home(): Promise<JSX.Element> {
 
-    const curFeed = (await getRandomlySortedFeed('2023-06-08')).map((story) => {
+    const curFeed = (await getRandomlySortedFeed()).map((story) => {
         return <Article {...story} key={story.id} />;
     });
 
