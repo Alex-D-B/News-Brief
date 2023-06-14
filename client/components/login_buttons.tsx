@@ -24,15 +24,15 @@ export function LogoutButton({ email }: LogoutButtonProps): JSX.Element {
 
     const pathname = usePathname();
     const children = pathname === '/profile' ? [
-        <Link className={className + " justify-self-start"} href="/">
+        <Link className={className + " justify-self-start"} href="/" key={0}>
             Home
         </Link>,
-        <button className={className + " justify-self-end"} onClick={() => signOut({ callbackUrl: '/callback' })}>
+        <button className={className + " justify-self-end"} onClick={() => signOut({ callbackUrl: '/callback' })} key={1}>
             Logout
         </button>
     ] : [
-        <p className="font-bold mt-auto mb-auto">{`Logged in as ${email}`}</p>,
-        <Link className={className + " justify-self-end"} href="/profile">
+        <p className="font-bold mt-auto mb-auto" key={0}>{`Logged in as ${email}`}</p>,
+        <Link className={className + " justify-self-end"} href="/profile" key={1}>
             Profile
         </Link>
     ];
