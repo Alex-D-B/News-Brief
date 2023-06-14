@@ -11,5 +11,6 @@ export default function Nav(): JSX.Element {
 }
 
 async function AuthButton(): Promise<JSX.Element> {
-    return await getServerSession(authOptions) ? <LogoutButton /> : <LoginButton />;
+    const session = await getServerSession(authOptions);
+    return session?.user?.email ? <LogoutButton email={session.user.email} /> : <LoginButton />;
 }
