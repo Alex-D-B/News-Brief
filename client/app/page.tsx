@@ -1,6 +1,6 @@
 import Article from '@/components/article';
 import { story as Story } from '@prisma/client';
-import database from '@/net/database';
+import database, { getUserPreferences } from '@/net/database';
 
 const getMostRecentStories = async (): Promise<Story[]> => {
     let date = new Date();
@@ -32,6 +32,11 @@ const getMostRecentStories = async (): Promise<Story[]> => {
 const getRandomlySortedFeed = async (): Promise<Story[]> => {
     let curFeed = await getMostRecentStories();
 
+    const userPreferences = await getUserPreferences();
+    if (userPreferences.size > 0) {
+        curFeed.filter((story) => story.categories.some((category) => userPreferences.has(category)));
+    }
+
     let i = curFeed.length;
     while (i > 0) {
         const swapIndex = Math.floor(Math.random() * i);
@@ -44,7 +49,6 @@ const getRandomlySortedFeed = async (): Promise<Story[]> => {
 }
 
 export default async function Home(): Promise<JSX.Element> {
-
     const curFeed = (await getRandomlySortedFeed()).map((story) => {
         return <Article {...story} key={story.id} />;
     });
@@ -59,5 +63,4 @@ export default async function Home(): Promise<JSX.Element> {
             </div>
         </div>
     );
-
 }
