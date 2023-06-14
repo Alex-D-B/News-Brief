@@ -1,12 +1,17 @@
 'use client';
 
-import { allCategories } from '@/app/types';
+import { allCategories, UserPreferences } from '@/app/types';
 
-export default function PreferenceForm(): JSX.Element {
+type Props = {
+    initiallySelectedCategories: UserPreferences;
+};
+export default function PreferenceForm({ initiallySelectedCategories }: Props): JSX.Element {
+    // turn the selected categories back into a set, since passing it through props turns it into an array
+    initiallySelectedCategories = new Set(initiallySelectedCategories);
     const categoryBoxes = allCategories.map((category, index) => {
         return (
             <div className="space-x-1" key={index}>
-                <input type='checkbox' value={category} />
+                <input type='checkbox' value={category} defaultChecked={initiallySelectedCategories.has(category)} />
                 <label>{category}</label>
             </div>
         );
