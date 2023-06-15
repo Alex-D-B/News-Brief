@@ -34,7 +34,7 @@ const getRandomlySortedFeed = async (): Promise<Story[]> => {
 
     const userPreferences = await getUserPreferences();
     if (userPreferences.size > 0) {
-        curFeed.filter((story) => story.categories.some((category) => userPreferences.has(category)));
+        curFeed = curFeed.filter((story) => story.categories.some((category) => userPreferences.has(category)));
     }
 
     let i = curFeed.length;

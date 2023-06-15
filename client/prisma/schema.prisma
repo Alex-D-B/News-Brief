@@ -20,6 +20,6 @@ model story {
 
 model user {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
-  email       String
+  email       String @unique
   preferences String[]
 }

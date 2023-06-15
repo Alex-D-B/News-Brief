@@ -14,11 +14,9 @@ export const getUserPreferences = async (): Promise<UserPreferences> => {
     const email = session?.user?.email;
     // if logged in, return user specific preferences
     if (email !== null && email !== undefined) {
-        const user = await prismaClient.user.findFirst({
+        const user = await prismaClient.user.findUnique({
             where: {
-                email: {
-                    equals: email
-                }
+                email: email
             }
         });
 
