@@ -12,8 +12,8 @@ export default async function Profile(): Promise<JSX.Element> {
     
     return (
         <>
+            <p className="fixed bottom-2 right-4">{`Logged in as ${email}`}</p>
             <PreferenceForm initiallySelectedCategories={await getUserPreferences()} />
-            <p className="fixed bottom-2">{`Logged in as ${email}`}</p>
         </>
     );
 }
