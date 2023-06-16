@@ -8,15 +8,15 @@ type Props = {
 };
 export default function PreferenceForm({ initiallySelectedCategories }: Props): JSX.Element {
     // turn the selected categories back into a set, since passing it through props turns it into an array
-    initiallySelectedCategories = new Set(initiallySelectedCategories);
-    const [formData] = useState<UserPreferences>(initiallySelectedCategories);
+    let selectedCategories = new Set(initiallySelectedCategories);
+    const [formData] = useState<Set<string>>(selectedCategories);
     let x = [1, 2, 3];
 
     const categoryBoxes = allCategories.map((category, index) => {
         return (
             <div className="space-x-1" key={index}>
                 <input
-                    type='checkbox' value={category} defaultChecked={initiallySelectedCategories.has(category)}
+                    type='checkbox' value={category} defaultChecked={selectedCategories.has(category)}
                     onClick={() => formData.has(category) ? formData.delete(category) : formData.add(category)}
                 />
                 <label>{category}</label>

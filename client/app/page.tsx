@@ -1,17 +1,13 @@
 import Article from '@/components/article';
 import { story as Story } from '@prisma/client';
-import database, { getUserPreferences } from '@/net/database';
+import database, { getUserPreferences, getStories } from '@/net/database';
 
 const getMostRecentStories = async (): Promise<Story[]> => {
+    const userPreferences = await getUserPreferences();
+
     let date = new Date();
     for (let i = 0; i < 3; ++i) {
-        const feed = await database.story.findMany({
-            where: {
-                date: {
-                    equals: date.toISOString().slice(0, 10)
-                }
-            }
-        });
+        const feed = await getStories(date.toISOString().slice(0, 10), userPreferences);
 
         if (feed.length > 0) {
             return feed;
@@ -19,23 +15,12 @@ const getMostRecentStories = async (): Promise<Story[]> => {
 
         date.setDate(date.getDate() - 1);
     }
-
-    return await database.story.findMany({
-        where: {
-            date: {
-                equals: '2023-06-08'
-            }
-        }
-    });
+    
+    return await getStories('2023-06-08', userPreferences);
 }
 
 const getRandomlySortedFeed = async (): Promise<Story[]> => {
     let curFeed = await getMostRecentStories();
-
-    const userPreferences = await getUserPreferences();
-    if (userPreferences.size > 0) {
-        curFeed = curFeed.filter((story) => story.categories.some((category) => userPreferences.has(category)));
-    }
 
     let i = curFeed.length;
     while (i > 0) {

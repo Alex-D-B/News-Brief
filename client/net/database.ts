@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, story as Story, Prisma } from '@prisma/client';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth/next';
 import { UserPreferences } from '@/app/types';
@@ -8,7 +8,7 @@ const prismaClient = new PrismaClient();
 export default prismaClient;
 
 export const getUserPreferences = async (): Promise<UserPreferences> => {
-    let res = new Set<string>();
+    let res: string[] = [];
 
     const session = await getServerSession(authOptions);
     const email = session?.user?.email;
@@ -22,9 +22,21 @@ export const getUserPreferences = async (): Promise<UserPreferences> => {
 
         // if user has stored preferences, use them
         if (user) {
-            user.preferences.forEach((category) => res.add(category));
+            res = user.preferences;
         }
     }
 
     return res;
 };
+
+export const getStories = async (date: string, categories: string[]): Promise<Story[]> => {
+    let query: Prisma.storyWhereInput = {
+        date: date
+    };
+    if (categories.length > 0) {
+        query.categories = {hasSome: categories};
+    }
+    return prismaClient.story.findMany({
+        where: query
+    });
+}

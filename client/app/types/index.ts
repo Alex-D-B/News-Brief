@@ -11,4 +11,4 @@ export const allCategories: StoryCategory[] = [
     'food', 'travel', 'magazine', 'realestate'
 ];
 
-export type UserPreferences = Set<string>;
+export type UserPreferences = string[];

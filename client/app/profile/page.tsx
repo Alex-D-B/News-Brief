@@ -9,8 +9,11 @@ export default async function Profile(): Promise<JSX.Element> {
     if (!email) {
         redirect('/');
     }
-    // <p className="text-lg">{`Logged in as ${email}`}</p>
+    
     return (
-        <PreferenceForm initiallySelectedCategories={await getUserPreferences()} />
+        <>
+            <PreferenceForm initiallySelectedCategories={await getUserPreferences()} />
+            <p className="fixed bottom-2">{`Logged in as ${email}`}</p>
+        </>
     );
 }
