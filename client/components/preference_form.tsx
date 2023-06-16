@@ -8,9 +8,13 @@ type Props = {
 };
 export default function PreferenceForm({ initiallySelectedCategories }: Props): JSX.Element {
     type OnClick = (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => Promise<void>;
-    const baseSaveBarClasses = [
+    const mainSaveBarClasses = [
         "mt-4 text-white font-bold py-0.5 px-2 rounded bg-green-500 hover:bg-green-700",
-        "bg-green-400 border-x-2 border-y-4 border-green-800 bg-opacity-80 border-opacity-20 py-1 fixed left-0 min-w-full"
+        "bg-green-400 border-x-2 border-y-4 border-green-800 bg-opacity-80 border-opacity-20 py-1 fixed left-0 min-w-full transition-opacity duration-1000 opacity-0"
+    ];
+    const altSaveBarClasses = [
+        "mt-4 text-white font-bold py-0.5 px-2 rounded bg-green-200 hover:bg-green-200",
+        "bg-green-400 border-x-2 border-y-4 border-green-800 bg-opacity-80 border-opacity-20 py-1 fixed left-0 min-w-full transition-opacity duration-1000 opacity-100"
     ];
 
     // turn the selected categories back into a set, since passing it through props turns it into an array
@@ -19,6 +23,8 @@ export default function PreferenceForm({ initiallySelectedCategories }: Props): 
 
     const defaultOnClick: OnClick = async (event) => {
         event.preventDefault();
+        updateOnclick((): OnClick => async (event) => event.preventDefault());
+        updateSaveBarClasses(altSaveBarClasses);
         await fetch('/api/user', {
             method: 'POST',
             cache: 'no-store',
@@ -29,10 +35,7 @@ export default function PreferenceForm({ initiallySelectedCategories }: Props): 
 
     const [onClick, updateOnclick] = useState(() => defaultOnClick);
     const [hideSavedBar, updateHideSavedBar] = useState(false);
-    const [saveBarClasses, updateSaveBarClasses] = useState([
-        baseSaveBarClasses[0] + " bg-green-500 hover:bg-green-700",
-        baseSaveBarClasses[1] + " opacity-0"
-    ]);
+    const [saveBarClasses, updateSaveBarClasses] = useState(mainSaveBarClasses);
 
     const categoryBoxes = allCategories.map((category, index) => {
         return (
@@ -47,18 +50,13 @@ export default function PreferenceForm({ initiallySelectedCategories }: Props): 
     });
 
     const setupFade = () => {
-        updateOnclick((): OnClick => async (event) => event.preventDefault());
         updateHideSavedBar(false);
-        updateSaveBarClasses([
-            baseSaveBarClasses[0] + " bg-green-200 hover:bg-green-200",
-            baseSaveBarClasses[1] + " transition-opacity duration-1000 opacity-100"
-        ]);
         setTimeout(() => {
-            updateSaveBarClasses([saveBarClasses[0], baseSaveBarClasses[1] + " transition-opacity duration-1000 opacity-0"]);
+            updateSaveBarClasses([altSaveBarClasses[0], mainSaveBarClasses[1]]);
         }, 2000);
         setTimeout(() => {
             updateHideSavedBar(true);
-            updateSaveBarClasses([baseSaveBarClasses[0] + " bg-green-500 hover:bg-green-700", baseSaveBarClasses[1]]);
+            updateSaveBarClasses(mainSaveBarClasses);
             updateOnclick(() => defaultOnClick);
         }, 3000);
     };
