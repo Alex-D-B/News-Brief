@@ -29,14 +29,17 @@ export const getUserPreferences = async (): Promise<UserPreferences> => {
     return res;
 };
 
-export const getStories = async (date: string, categories: string[]): Promise<Story[]> => {
-    let query: Prisma.storyWhereInput = {
-        date: date
-    };
-    if (categories.length > 0) {
-        query.categories = {hasSome: categories};
-    }
+type AdditionalParams = {
+    date?: string,
+    getTop?: boolean
+};
+export const getStories = async (categories: string[], { date, getTop }: AdditionalParams): Promise<Story[]> => {
     return prismaClient.story.findMany({
-        where: query
+        where: {
+            date: date,
+            categories: categories.length > 0 ? { hasSome: categories } : undefined
+        },
+        orderBy: getTop ? { date: 'desc' } : undefined,
+        take: getTop ? 50 : undefined
     });
 }

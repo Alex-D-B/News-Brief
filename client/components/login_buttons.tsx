@@ -7,13 +7,24 @@ import Link from 'next/link'
 const className = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
 
 export function LoginButton(): JSX.Element {
+
+    const pathname = usePathname();
+    const homeButton = pathname === '/' ? <div></div> : (
+        <Link className={className + " justify-self-start"} href="/">
+            Home
+        </Link>
+    );
+
     return (
-        <button
-            className={className + " float-right"}
-            onClick={() => signIn('google', { callbackUrl: '/callback' })}
-        >
-            Login
-        </button>
+        <div className="grid grid-cols-2">
+            {homeButton}
+            <button
+                className={className + " justify-self-end"}
+                onClick={() => signIn('google', { callbackUrl: '/callback' })}
+            >
+                Login
+            </button>
+        </div>
     );
 }
 
