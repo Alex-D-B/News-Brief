@@ -1,5 +1,4 @@
 import scrapy
-import requests
 from datetime import date
 import time
 from stories import nytData
