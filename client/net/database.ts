@@ -29,15 +29,18 @@ export const getUserPreferences = async (): Promise<UserPreferences> => {
     return res;
 };
 
-type AdditionalParams = {
+type GetStoriesParams = {
+    categories?: string[],
+    sources?: string[],
     date?: string,
     getTop?: boolean
 };
-export const getStories = async (categories: string[], { date, getTop }: AdditionalParams): Promise<Story[]> => {
+export const getStories = async ({ categories, sources, date, getTop }: GetStoriesParams): Promise<Story[]> => {
     return prismaClient.story.findMany({
         where: {
             date: date,
-            categories: categories.length > 0 ? { hasSome: categories } : undefined
+            categories: categories && categories.length > 0 ? { hasSome: categories } : undefined,
+            source: sources && sources.length > 0 ? { in: sources } : undefined
         },
         orderBy: getTop ? { date: 'desc' } : undefined,
         take: getTop ? 50 : undefined

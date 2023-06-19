@@ -3,9 +3,9 @@ import { getStories } from '@/net/database';
 
 type Props = {
     params: {
-        category: string;
+        source: string;
     }
 };
 export default async function CategoryPage({ params }: Props): Promise<JSX.Element> {
-    return <SectionFeedPage getSectionStories={async () => getStories({ categories: [params.category], getTop: true })} />;
+    return <SectionFeedPage getSectionStories={async () => getStories({ sources: [params.source], getTop: true })} />;
 }
