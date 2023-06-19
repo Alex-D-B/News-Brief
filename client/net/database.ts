@@ -8,7 +8,7 @@ const prismaClient = new PrismaClient();
 export default prismaClient;
 
 export const getUserPreferences = async (): Promise<UserPreferences> => {
-    let res: string[] = [];
+    let res: UserPreferences = {categories: [], sources: []};
 
     const session = await getServerSession(authOptions);
     const email = session?.user?.email;
@@ -22,7 +22,7 @@ export const getUserPreferences = async (): Promise<UserPreferences> => {
 
         // if user has stored preferences, use them
         if (user) {
-            res = user.preferences;
+            res = { categories: user.categories, sources: user.sources };
         }
     }
 

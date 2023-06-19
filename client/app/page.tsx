@@ -7,7 +7,7 @@ const getMostRecentStories = async (): Promise<Story[]> => {
 
     let date = new Date();
     for (let i = 0; i < 3; ++i) {
-        const feed = await getStories({ categories: userPreferences, date: date.toISOString().slice(0, 10) });
+        const feed = await getStories({...userPreferences, date: date.toISOString().slice(0, 10) });
 
         if (feed.length > 0) {
             return feed;
@@ -16,7 +16,7 @@ const getMostRecentStories = async (): Promise<Story[]> => {
         date.setDate(date.getDate() - 1);
     }
     
-    return await getStories({ categories: userPreferences, date: '2023-06-08' });
+    return await getStories({...userPreferences, date: '2023-06-08' });
 }
 
 const getRandomlySortedFeed = async (): Promise<Story[]> => {

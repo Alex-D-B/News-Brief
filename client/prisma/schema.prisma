@@ -21,5 +21,6 @@ model story {
 model user {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   email       String @unique
-  preferences String[]
+  categories  String[]
+  sources     String[]
 }

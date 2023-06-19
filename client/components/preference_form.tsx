@@ -1,12 +1,13 @@
 'use client';
 
-import { allCategories, UserPreferences } from '@/app/types';
+import { allCategories, allSources, UserCategoryPreferences, UserSourcePreferences } from '@/app/types';
 import { MouseEvent, useState } from 'react';
 
 type Props = {
-    initiallySelectedCategories: UserPreferences;
+    initiallySelectedCategories: UserCategoryPreferences,
+    initiallySelectedSources: UserSourcePreferences
 };
-export default function PreferenceForm({ initiallySelectedCategories }: Props): JSX.Element {
+export default function PreferenceForm({ initiallySelectedCategories, initiallySelectedSources }: Props): JSX.Element {
     type OnClick = (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => Promise<void>;
     const mainSaveBarClasses = [
         "mt-4 text-white font-bold py-0.5 px-2 rounded bg-green-500 hover:bg-green-700",
@@ -17,9 +18,10 @@ export default function PreferenceForm({ initiallySelectedCategories }: Props): 
         "bg-green-400 border-x-2 border-y-4 border-green-800 bg-opacity-80 border-opacity-20 py-1 fixed left-0 min-w-full transition-opacity duration-1000 opacity-100"
     ];
 
-    // turn the selected categories back into a set, since passing it through props turns it into an array
+    // turn the selected categories and sources back into a set, since passing it through props turns it into an array
     let selectedCategories = new Set(initiallySelectedCategories);
-    const [formData] = useState<Set<string>>(selectedCategories);
+    let selectedSources = new Set(initiallySelectedSources);
+    const [formData] = useState({selectedCategories, selectedSources});
 
     const defaultOnClick: OnClick = async (event) => {
         event.preventDefault();
@@ -28,7 +30,10 @@ export default function PreferenceForm({ initiallySelectedCategories }: Props): 
         await fetch('/api/user', {
             method: 'POST',
             cache: 'no-store',
-            body: JSON.stringify(Array.from(formData))
+            body: JSON.stringify({
+                categories: Array.from(formData.selectedCategories),
+                sources: Array.from(formData.selectedSources)
+            })
         });
         setupFade();
     };
@@ -42,9 +47,29 @@ export default function PreferenceForm({ initiallySelectedCategories }: Props): 
             <div className="space-x-1" key={index}>
                 <input
                     type='checkbox' value={category} defaultChecked={selectedCategories.has(category)}
-                    onClick={() => formData.has(category) ? formData.delete(category) : formData.add(category)}
+                    onClick={
+                        () => formData.selectedCategories.has(category)
+                            ? formData.selectedCategories.delete(category)
+                            : formData.selectedCategories.add(category)
+                    }
                 />
                 <label>{category}</label>
+            </div>
+        );
+    });
+
+    const sourceBoxes = allSources.map((source, index) => {
+        return (
+            <div className="space-x-1" key={index}>
+                <input
+                    type='checkbox' value={source} defaultChecked={selectedSources.has(source)}
+                    onClick={
+                        () => formData.selectedSources.has(source)
+                            ? formData.selectedSources.delete(source)
+                            : formData.selectedSources.add(source)
+                    }
+                />
+                <label>{source}</label>
             </div>
         );
     });
@@ -64,7 +89,14 @@ export default function PreferenceForm({ initiallySelectedCategories }: Props): 
     return (
         <div>
             <form className="mb-2">
-                {categoryBoxes}
+                <div className="grid grid-cols-2 max-w-md">
+                    <div>
+                        {categoryBoxes}
+                    </div>
+                    <div>
+                        {sourceBoxes}
+                    </div>
+                </div>
                 <button
                     className={saveBarClasses[0]}
                     onClick={onClick}>

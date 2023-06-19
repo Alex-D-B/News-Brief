@@ -11,4 +11,16 @@ export const allCategories: StoryCategory[] = [
     'food', 'travel', 'magazine', 'realestate'
 ];
 
-export type UserPreferences = string[];
+export type StorySource = 'New York Times' | 'Washington Post';
+
+export const allSources: StorySource[] = [
+    'New York Times', 'Washington Post'
+];
+
+export type UserCategoryPreferences = string[];
+export type UserSourcePreferences = string[];
+
+export type UserPreferences = {
+    categories: UserCategoryPreferences,
+    sources: UserSourcePreferences
+};

@@ -14,17 +14,19 @@ export async function POST(request: NextRequest) {
     const email = (await getServerSession(authOptions))?.user?.email;
     if (!email) return NextResponse.error();
 
-    const updatedPreferences = await request.json();
+    const { categories, sources } = await request.json();
     await database.user.upsert({
         where: {
             email: email
         },
         update: {
-            preferences: updatedPreferences
+            categories: categories,
+            sources: sources
         },
         create: {
             email: email,
-            preferences: updatedPreferences
+            categories: categories,
+            sources: sources
         }
     });
 
