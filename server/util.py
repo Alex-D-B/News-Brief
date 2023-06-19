@@ -7,12 +7,11 @@ def setup():
 
 # use crochet to make the spider crawl a website
 @wait_for(20)
-def scrape(SpiderCls):
-    return CrawlerRunner(settings={
-        'FEEDS': {
-            './data/' + SpiderCls.name + '.json': {
-                'format': 'json',
-                'overwrite': True
-            }
-        }
-    }).crawl(SpiderCls)
+def scrapeWithScrapySpider(SpiderCls):
+    return CrawlerRunner().crawl(SpiderCls)
+
+def displayProgress(curProgress, totalSegments):
+    print('\r[\033[01;32m' + ('#' * curProgress) + '\033[00m' + ('-' * (totalSegments - curProgress)) + ']', end='')
+
+def displayProgressFinished(totalSegments):
+    print('\r[\033[01;32m' + ('#' * totalSegments) + '\033[00m]')

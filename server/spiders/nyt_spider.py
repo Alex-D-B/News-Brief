@@ -2,6 +2,7 @@ import scrapy
 from datetime import date
 import time
 from stories import nytData
+import util
 
 class NYTSpider(scrapy.Spider):
     name = 'nyt'
@@ -54,7 +55,7 @@ class NYTSpider(scrapy.Spider):
 
     def parse(self, response):
         curProgress = self.totalSegments - len(self.additional_categories) - 1
-        print('\r[\033[01;32m' + ('#' * curProgress) + '\033[00m' + ('-' * (self.totalSegments - curProgress)) + ']', end='')
+        util.displayProgress(curProgress, self.totalSegments)
 
         sections = response.css('section.css-15h4p1b').xpath('div')[-3:]
         mainSections = sections[0].xpath('section/div')
@@ -92,4 +93,8 @@ class NYTSpider(scrapy.Spider):
             yield response.follow('https://www.nytimes.com/section/' + self.curCategory + ('/review' if self.curCategory == 'books' else ''), self.parse)
         else:
             nytData.save(self.seenStories.values())
-            print('\r[\033[01;32m' + ('#' * self.totalSegments) + '\033[00m]')
+            util.displayProgressFinished(self.totalSegments)
+
+def scrape():
+    print('Scraping New York Times:')
+    util.scrapeWithScrapySpider(NYTSpider)

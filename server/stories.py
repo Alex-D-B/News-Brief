@@ -3,7 +3,7 @@ class ScrapedData:
         self.data = None
 
     def save(self, data):
-        self.data = data
+        self.data = list(data)
         for story in self.data:
             story['categories'] = list(story['categories'])
 
@@ -11,3 +11,7 @@ class ScrapedData:
         return self.data
     
 nytData = ScrapedData()
+washpostData = ScrapedData()
+
+def getAllScrapedData():
+    return nytData.get() + washpostData.get()
