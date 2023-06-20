@@ -6,7 +6,7 @@ def setup():
     crochetSetup()
 
 # use crochet to make the spider crawl a website
-@wait_for(20)
+@wait_for(30)
 def scrapeWithScrapySpider(SpiderCls):
     return CrawlerRunner().crawl(SpiderCls)
 
