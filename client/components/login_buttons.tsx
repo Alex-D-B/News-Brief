@@ -3,6 +3,7 @@
 import { signIn, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link'
+import SearchMenu from './search_menu';
 
 const className = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
 
@@ -43,9 +44,12 @@ export function LogoutButton({ email }: LogoutButtonProps): JSX.Element {
         </button>
     ] : [
         <p className="font-bold mt-auto mb-auto" key={0}>{`Logged in as ${email}`}</p>,
-        <Link className={className + " justify-self-end"} href="/profile" key={1}>
-            Profile
-        </Link>
+        <div className="flex space-x-4 justify-self-end" key={1}>
+            <SearchMenu />
+            <Link className={className} href="/profile">
+                Profile
+            </Link>
+        </div>
     ];
 
     return (
