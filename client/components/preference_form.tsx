@@ -1,14 +1,14 @@
 'use client';
 
 import { allCategories, allSources, UserCategoryPreferences, UserSourcePreferences } from '@/app/types';
-import { MouseEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 type Props = {
     initiallySelectedCategories: UserCategoryPreferences,
     initiallySelectedSources: UserSourcePreferences
 };
 export default function PreferenceForm({ initiallySelectedCategories, initiallySelectedSources }: Props): JSX.Element {
-    type OnClick = (event: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => Promise<void>;
+    type OnSubmit = (event: FormEvent) => Promise<void>;
     const mainSaveBarClasses = [
         "mt-4 text-white font-bold py-0.5 px-2 rounded bg-green-500 hover:bg-green-700",
         "bg-green-400 border-x-2 border-y-4 border-green-800 bg-opacity-80 border-opacity-20 py-1 fixed left-0 min-w-full transition-opacity duration-1000 opacity-0"
@@ -21,24 +21,27 @@ export default function PreferenceForm({ initiallySelectedCategories, initiallyS
     // turn the selected categories and sources back into a set, since passing it through props turns it into an array
     let selectedCategories = new Set(initiallySelectedCategories);
     let selectedSources = new Set(initiallySelectedSources);
-    const [formData] = useState({selectedCategories, selectedSources});
 
-    const defaultOnClick: OnClick = async (event) => {
+    const defaultOnSubmit: OnSubmit = async (event) => {
         event.preventDefault();
-        updateOnclick((): OnClick => async (event) => event.preventDefault());
+        updateOnSubmit((): OnSubmit => async (event) => event.preventDefault());
         updateSaveBarClasses(altSaveBarClasses);
         await fetch('/api/user', {
             method: 'POST',
             cache: 'no-store',
             body: JSON.stringify({
-                categories: Array.from(formData.selectedCategories),
-                sources: Array.from(formData.selectedSources)
+                categories: allCategories.map(
+                        (category) => (event.target as any)[category]?.checked ? category : undefined
+                    ).filter((category) => category !== undefined),
+                sources: allSources.map(
+                        (source) => (event.target as any)[source]?.checked ? source : undefined
+                    ).filter((source) => source !== undefined)
             })
         });
         setupFade();
     };
 
-    const [onClick, updateOnclick] = useState(() => defaultOnClick);
+    const [onSubmit, updateOnSubmit] = useState(() => defaultOnSubmit);
     const [hideSavedBar, updateHideSavedBar] = useState(false);
     const [saveBarClasses, updateSaveBarClasses] = useState(mainSaveBarClasses);
 
@@ -46,12 +49,7 @@ export default function PreferenceForm({ initiallySelectedCategories, initiallyS
         return (
             <div className="space-x-1" key={index}>
                 <input
-                    type='checkbox' value={category} defaultChecked={formData.selectedCategories.has(category)}
-                    onClick={
-                        () => formData.selectedCategories.has(category)
-                            ? formData.selectedCategories.delete(category)
-                            : formData.selectedCategories.add(category)
-                    }
+                    type='checkbox' name={category} defaultChecked={selectedCategories.has(category)}
                 />
                 <label>{category}</label>
             </div>
@@ -62,12 +60,7 @@ export default function PreferenceForm({ initiallySelectedCategories, initiallyS
         return (
             <div className="space-x-1" key={index}>
                 <input
-                    type='checkbox' value={source} defaultChecked={formData.selectedSources.has(source)}
-                    onClick={
-                        () => formData.selectedSources.has(source)
-                            ? formData.selectedSources.delete(source)
-                            : formData.selectedSources.add(source)
-                    }
+                    type='checkbox' name={source} defaultChecked={selectedSources.has(source)}
                 />
                 <label>{source}</label>
             </div>
@@ -82,13 +75,13 @@ export default function PreferenceForm({ initiallySelectedCategories, initiallyS
         setTimeout(() => {
             updateHideSavedBar(true);
             updateSaveBarClasses(mainSaveBarClasses);
-            updateOnclick(() => defaultOnClick);
+            updateOnSubmit(() => defaultOnSubmit);
         }, 3000);
     };
 
     return (
         <div>
-            <form className="mb-2">
+            <form className="mb-2" onSubmit={onSubmit}>
                 <div className="grid grid-cols-2 max-w-md">
                     <div>
                         {categoryBoxes}
@@ -97,11 +90,12 @@ export default function PreferenceForm({ initiallySelectedCategories, initiallyS
                         {sourceBoxes}
                     </div>
                 </div>
-                <button
+                <input
+                    type='submit'
                     className={saveBarClasses[0]}
-                    onClick={onClick}>
-                    save
-                </button>
+                    defaultValue='save'
+                />
+                    
             </form>
             <div className={saveBarClasses[1]} hidden={hideSavedBar}>
                 <p className="text-center font-semibold">successfully saved</p>
