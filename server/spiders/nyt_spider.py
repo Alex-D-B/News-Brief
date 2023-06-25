@@ -61,12 +61,13 @@ class NYTSpider(scrapy.Spider):
         mainSections = sections[0].xpath('section/div')
 
         # get highlights
-        for story in mainSections[0].css('article').xpath('div'):
-            linkExt = story.css('h3 a::attr(href)').get()
-            if linkExt[:self.linkLen] != self.linkDateStr:
-                continue
+        if len(mainSections) > 0:
+            for story in mainSections[0].css('article').xpath('div'):
+                linkExt = story.css('h3 a::attr(href)').get()
+                if linkExt[:self.linkLen] != self.linkDateStr:
+                    continue
 
-            self.storeStory(story, linkExt, titleCSSSelector='h3 a::text', authorCSSSelector='span.css-1baulvz::text')
+                self.storeStory(story, linkExt, titleCSSSelector='h3 a::text', authorCSSSelector='span.css-1baulvz::text')
 
         # get other stories in main section
         for story in mainSections[1:].css('a') + sections[0].xpath('section/ol//a'):
