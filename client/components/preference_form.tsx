@@ -30,12 +30,8 @@ export default function PreferenceForm({ initiallySelectedCategories, initiallyS
             method: 'POST',
             cache: 'no-store',
             body: JSON.stringify({
-                categories: allCategories.map(
-                        (category) => (event.target as any)[category]?.checked ? category : undefined
-                    ).filter((category) => category !== undefined),
-                sources: allSources.map(
-                        (source) => (event.target as any)[source]?.checked ? source : undefined
-                    ).filter((source) => source !== undefined)
+                categories: allCategories.filter((category) => (event.target as any)[category]?.checked),
+                sources: allSources.filter((source) => (event.target as any)[source]?.checked)
             })
         });
         setupFade();

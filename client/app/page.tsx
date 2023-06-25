@@ -34,7 +34,9 @@ const getRandomlySortedFeed = async (): Promise<Story[]> => {
 }
 
 export default async function Home(): Promise<JSX.Element> {
-    return <Feed getFeed={getRandomlySortedFeed} divideArticles={(articles) => {
-        return { leftFeed: articles.slice(0, articles.length / 2), rightFeed: articles.slice(articles.length / 2) };
-    }} showDate={false} />;
+    return (
+        <Feed getFeed={getRandomlySortedFeed} divideArticles={(articles) => {
+            return { leftFeed: articles.slice(0, articles.length / 2), rightFeed: articles.slice(articles.length / 2) };
+        }} showDate={false} />
+    );
 }

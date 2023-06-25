@@ -11,14 +11,10 @@ export default async function Profile(): Promise<JSX.Element> {
     }
 
     const { categories, sources } = await getUserPreferences();
-    
     return (
-        <>
-            <p className="fixed bottom-2 right-4">{`Logged in as ${email}`}</p>
-            <PreferenceForm
-                initiallySelectedCategories={categories}
-                initiallySelectedSources={sources}
-            />
-        </>
+        <PreferenceForm
+            initiallySelectedCategories={categories}
+            initiallySelectedSources={sources}
+        />
     );
 }

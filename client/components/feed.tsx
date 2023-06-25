@@ -33,11 +33,13 @@ type SectionFeedPageProps = {
     getSectionStories: () => Promise<Story[]>
 };
 export async function SectionFeedPage({ getSectionStories }: SectionFeedPageProps): Promise<JSX.Element> {
-    return <Feed getFeed={getSectionStories} divideArticles={(articles) => {
-        let [leftFeed, rightFeed]: JSX.Element[][] = [[], []];
-        articles.forEach((article, index) => {
-            index % 2 === 0 ? leftFeed.push(article) : rightFeed.push(article);
-        });
-        return { leftFeed, rightFeed };
-    }} showDate={true} />;
+    return (
+        <Feed getFeed={getSectionStories} divideArticles={(articles) => {
+            let [leftFeed, rightFeed]: JSX.Element[][] = [[], []];
+            articles.forEach((article, index) => {
+                index % 2 === 0 ? leftFeed.push(article) : rightFeed.push(article);
+            });
+            return { leftFeed, rightFeed };
+        }} showDate={true} />
+    );
 }

@@ -19,31 +19,34 @@ export function LoginButton(): JSX.Element {
     return (
         <div className="grid grid-cols-2">
             {homeButton}
-            <button
-                className={className + " justify-self-end"}
-                onClick={() => signIn('google', { callbackUrl: '/callback' })}
-            >
-                Login
-            </button>
+            <div className="flex space-x-4 justify-self-end">
+                <SearchMenu />
+                <button
+                    className={className + " justify-self-end"}
+                    onClick={() => signIn('google', { callbackUrl: '/callback' })}
+                >
+                    Login
+                </button>
+            </div>
         </div>
     );
 }
 
-type LogoutButtonProps = {
-    email: string;
-}
-export function LogoutButton({ email }: LogoutButtonProps): JSX.Element {
+export function LogoutButton(): JSX.Element {
+    const homeButton = (
+        <Link className={className + " justify-self-start"} href="/" key={0}>
+            Home
+        </Link>
+    );
 
     const pathname = usePathname();
     const children = pathname === '/profile' ? [
-        <Link className={className + " justify-self-start"} href="/" key={0}>
-            Home
-        </Link>,
+        homeButton,
         <button className={className + " justify-self-end"} onClick={() => signOut({ callbackUrl: '/callback' })} key={1}>
             Logout
         </button>
     ] : [
-        <p className="font-bold mt-auto mb-auto" key={0}>{`Logged in as ${email}`}</p>,
+        pathname !== '/' ? homeButton : <div></div>,
         <div className="flex space-x-4 justify-self-end" key={1}>
             <SearchMenu />
             <Link className={className} href="/profile">

@@ -43,6 +43,6 @@ export const getStories = async ({ categories, sources, date, getTop }: GetStori
             source: sources && sources.length > 0 ? { in: sources } : undefined
         },
         orderBy: getTop ? { date: 'desc' } : undefined,
-        take: getTop ? 50 : undefined
+        take: getTop || date === undefined ? 50 : undefined
     });
 }
