@@ -46,7 +46,7 @@ export function LogoutButton(): JSX.Element {
             Logout
         </button>
     ] : [
-        pathname !== '/' ? homeButton : <div></div>,
+        pathname !== '/' ? homeButton : <div key={0}></div>,
         <div className="flex space-x-4 justify-self-end" key={1}>
             <SearchMenu />
             <Link className={className} href="/profile">
