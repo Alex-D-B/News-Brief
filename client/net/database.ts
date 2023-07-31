@@ -46,3 +46,7 @@ export const getStories = async ({ categories, sources, date, getTop }: GetStori
         take: getTop || date === undefined ? 50 : undefined
     });
 }
+
+export const getHomeMessage = async (): Promise<string> => {
+    return (await prismaClient.home_message.findFirst())?.message || '';
+}

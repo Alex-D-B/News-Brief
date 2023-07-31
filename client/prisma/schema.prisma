@@ -24,3 +24,8 @@ model user {
   categories  String[]
   sources     String[]
 }
+
+model home_message {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+}
