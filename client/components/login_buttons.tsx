@@ -5,18 +5,23 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import SearchMenu from './search_menu';
 
-const className = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
+const classNameAuth = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
+const classNameNav = "font-bold";
 
 function NavBase({ children }: { children: JSX.Element }): JSX.Element {
     const pathname = usePathname();
     const homeButton = (
-        <div className="flex space-x-4">
-            <Link className={className + " justify-self-start"} href="/">
-                Home
-            </Link>
-            <Link className={className + " justify-self-start"} href="/feed">
-                Feed
-            </Link>
+        <div className="mt-auto mb-auto flex px-2 space-x-4">
+            {pathname === '/' ? (<></>) : (
+                <Link className={classNameNav} href="/">
+                    Home
+                </Link>
+            )}
+            {pathname === '/feed' ? (<></>) : (
+                <Link className={classNameNav} href="/feed">
+                    Feed
+                </Link>
+            )}
         </div>
     );
 
@@ -35,7 +40,7 @@ export function LoginButton(): JSX.Element {
     return (
         <NavBase>
             <button
-                className={className + " justify-self-end"}
+                className={classNameAuth + " justify-self-end"}
                 onClick={() => signIn('google', { callbackUrl: '/callback' })}
             >
                 Login
@@ -47,11 +52,11 @@ export function LoginButton(): JSX.Element {
 export function LogoutButton(): JSX.Element {
     const pathname = usePathname();
     const button = pathname === '/profile' ? (
-        <button className={className} onClick={() => signOut({ callbackUrl: '/callback' })}>
+        <button className={classNameAuth} onClick={() => signOut({ callbackUrl: '/callback' })}>
             Logout
         </button>
     ) : (
-        <Link className={className} href="/profile">
+        <Link className={classNameAuth} href="/profile">
             Profile
         </Link>
     );
